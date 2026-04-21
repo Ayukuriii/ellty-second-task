@@ -1,0 +1,58 @@
+services:
+
+  # ─── DATABASE ──────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}           # pulled from your .env file
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # persist DB across restarts
+    ports:
+      - "5433:5432"   # exposes to your local machine (useful for DB GUI tools)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s    # check every 5 seconds
+      timeout: 5s     # fail if no response in 5s
+      retries: 5      # after 5 failures, mark as unhealthy
+
+  # ─── SERVER ────────────────────────────────────────────────
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env                          # inject all .env vars into container
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy          # ← waits until healthcheck passes
+    command: >
+      sh -c "npm run migrate && npm run start"
+
+  # ─── CLIENT ────────────────────────────────────────────────
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:80"                             # nginx serves on port 80
+    depends_on:
+      - server                              # just ordering — no healthcheck needed
+
+  # ─── OPTIONAL: DB GUI ──────────────────────────────────────
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"                         # open browser → localhost:8080
+    depends_on:
+      - db
+
+# named volume — Docker manages this, data survives container restarts
+volumes:
+  postgres_data:
