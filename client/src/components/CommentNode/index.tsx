@@ -26,7 +26,10 @@ function formatCreatedAt(createdAt: string): string {
     return createdAt
   }
 
-  return date.toISOString()
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date)
 }
 
 export function CommentNode({ node, depth }: CommentNodeProps): JSX.Element {
