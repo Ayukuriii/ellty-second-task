@@ -8,7 +8,7 @@ RUN npm ci
 
 COPY tsconfig.json ./
 COPY src/ ./src/
-COPY knexfile.ts ./
+COPY knexfile.cjs ./
 
 RUN npm run build          # runs tsc → outputs to /app/dist
 
@@ -22,7 +22,7 @@ COPY package*.json ./
 RUN npm ci --omit=dev      # production deps only — no devDependencies
 
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/knexfile.ts ./knexfile.ts
+COPY --from=builder /app/knexfile.cjs ./knexfile.cjs
 
 EXPOSE 3000
 
