@@ -10,7 +10,7 @@
     "test": "jest --coverage",
     "lint": "eslint src/**/*.ts",
     "migrate": "knex --knexfile knexfile.ts migrate:latest --env development",
-    "migrate:prod": "knex --knexfile knexfile.js migrate:latest --env production",
+    "migrate:prod": "knex --knexfile knexfile.cjs migrate:latest --env production",
     "migrate:make": "knex --knexfile knexfile.ts migrate:make",
     "migrate:rollback": "knex --knexfile knexfile.ts migrate:rollback"
   },
