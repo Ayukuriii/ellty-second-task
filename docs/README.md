@@ -10,5 +10,6 @@ HTTP contracts live under [`api-spec/`](api-spec/):
 |----------|-------------|
 | [api-spec/response-format.md](api-spec/response-format.md) | Global JSON envelopes for success and errors, plus HTTP status guidelines. |
 | [api-spec/auth.md](api-spec/auth.md) | Authentication endpoints (`/api/auth/*`). |
+| [api-spec/nodes.md](api-spec/nodes.md) | Node endpoints (`/api/nodes/*`). |
 
-When you add new surface area (for example nodes), add a focused spec file under `api-spec/` and link it here.
+When you add new surface area, add a focused spec file under `api-spec/` and link it here.

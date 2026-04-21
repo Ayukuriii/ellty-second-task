@@ -2,7 +2,7 @@
 
 All JSON responses from this API follow a single contract unless a future endpoint explicitly documents an exception (for example `204 No Content` with an empty body).
 
-Related: [Authentication](auth.md).
+Related: [Authentication](auth.md), [Nodes](nodes.md).
 
 ## Success (2xx)
 
@@ -16,7 +16,7 @@ Successful responses that return JSON use this envelope:
 ```
 
 - **`message`** — Stable enough for logs or generic UI copy; not a substitute for i18n keys unless you add them later.
-- **`data`** — Endpoint-specific payload (objects, arrays, primitives). For auth, this holds `token` and `user` (see [auth.md](auth.md)).
+- **`data`** — Endpoint-specific payload (objects, arrays, primitives). For auth, this holds `token` and `user` (see [auth.md](auth.md)). For nodes, this holds a node object or an array of nodes (see [nodes.md](nodes.md)).
 
 Use the **HTTP status** to distinguish outcomes (created vs OK); do not put errors inside a `200` body.
 
@@ -67,4 +67,4 @@ Signal the result with the **status line**; the body carries details. Do not ret
 
 ## Current coverage
 
-As of this document, every implemented JSON route follows this contract (**authentication** only). New routes should use `sendSuccess` (or equivalent) and the global `errorHandler` for consistency.
+As of this document, every implemented JSON route follows this contract (**authentication** and **nodes**). New routes should use `sendSuccess` (or equivalent) and the global `errorHandler` for consistency.
