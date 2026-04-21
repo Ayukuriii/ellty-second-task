@@ -8,6 +8,9 @@ export default defineConfig({
     react(),
     tailwindcss(), // ← replaces postcss config
   ],
+  test: {
+    environment: 'jsdom',
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
