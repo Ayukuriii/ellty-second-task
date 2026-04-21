@@ -27,7 +27,7 @@ function App() {
         onLogoutClick={logout}
       />
       <h1 className="mb-4 text-2xl font-bold">Numeric Discussion</h1>
-      <Thread />
+      <Thread onRequireAuth={() => openAuthModal('login')} />
       <AuthModal
         isOpen={isAuthModalOpen}
         mode={authMode}

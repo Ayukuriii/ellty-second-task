@@ -58,7 +58,7 @@ export class NodeRepository {
   async findAllFlat(): Promise<NodeWithAuthor[]> {
     const rows = (await this
       .baseUserJoin(knex('nodes'))
-      .orderBy('nodes.created_at', 'asc')) as Record<string, unknown>[]
+      .orderBy('nodes.created_at', 'desc')) as Record<string, unknown>[]
     return rows.map((r) => mapNodeWithAuthor(r))
   }
 

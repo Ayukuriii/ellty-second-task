@@ -32,7 +32,13 @@ function formatCreatedAt(createdAt: string): string {
   }).format(date)
 }
 
-export function CommentNode({ node, depth }: CommentNodeProps): JSX.Element {
+export function CommentNode({
+  node,
+  depth,
+  activeReplyNodeId,
+  onReplyClick,
+  renderReplyForm,
+}: CommentNodeProps): JSX.Element {
   return (
     <li
       style={{ marginLeft: `${depth * 16}px` }}
@@ -45,11 +51,26 @@ export function CommentNode({ node, depth }: CommentNodeProps): JSX.Element {
       <p>By: {node.author.username}</p>
       <p>Created: {formatCreatedAt(node.created_at)}</p>
       <p>Children: {node.children.length}</p>
+      <button
+        type="button"
+        className="mt-2 rounded border border-slate-300 px-2 py-1 text-sm"
+        onClick={() => onReplyClick(node.id)}
+      >
+        Reply
+      </button>
+      {activeReplyNodeId === node.id ? <div className="mt-2">{renderReplyForm(node.id)}</div> : null}
 
       {node.children.length > 0 ? (
         <ul className="mt-2 space-y-2">
           {node.children.map((child) => (
-            <CommentNode key={child.id} node={child} depth={depth + 1} />
+            <CommentNode
+              key={child.id}
+              node={child}
+              depth={depth + 1}
+              activeReplyNodeId={activeReplyNodeId}
+              onReplyClick={onReplyClick}
+              renderReplyForm={renderReplyForm}
+            />
           ))}
         </ul>
       ) : null}
