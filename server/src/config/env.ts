@@ -1,7 +1,17 @@
-import { z } from 'zod'
+import path from 'node:path'
 import dotenv from 'dotenv'
+import { z } from 'zod'
 
-dotenv.config()
+/** This file lives at `server/src/config`; `server/` and repo root both may hold env files. */
+const serverRoot = path.resolve(__dirname, '../..')
+const repoRoot = path.resolve(__dirname, '../../..')
+
+// Default `dotenv.config()` only reads `process.cwd()/.env` — empty when vars live at repo root.
+// Later files override earlier ones (same convention as Docker + local overrides).
+dotenv.config({ path: path.join(repoRoot, '.env') })
+dotenv.config({ path: path.join(repoRoot, '.env.local'), override: true })
+dotenv.config({ path: path.join(serverRoot, '.env'), override: true })
+dotenv.config({ path: path.join(serverRoot, '.env.local'), override: true })
 
 const envSchema = z.object({
   NODE_ENV: z
