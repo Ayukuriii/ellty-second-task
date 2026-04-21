@@ -22,7 +22,7 @@ const replyOperationSchema = z.enum(['add', 'sub', 'mul', 'div'])
 
 export const createReplyBodySchema = z.object({
   operation: replyOperationSchema,
-  operand: finiteNumber,
+  operand: maxTenDigits,
 })
 
 export type CreateReplyBody = z.infer<typeof createReplyBodySchema>
