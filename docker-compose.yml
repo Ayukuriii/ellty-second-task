@@ -1,5 +1,4 @@
 services:
-
   # ─── DATABASE ──────────────────────────────────────────────
   db:
     image: postgres:16-alpine
@@ -18,8 +17,9 @@ services:
       timeout: 5s     # fail if no response in 5s
       retries: 5      # after 5 failures, mark as unhealthy
 
-  # ─── SERVER ────────────────────────────────────────────────
+  # ─── PRODUCTION-LIKE API ───────────────────────────────────
   server:
+    profiles: ["prod"]
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -31,10 +31,11 @@ services:
       db:
         condition: service_healthy          # ← waits until healthcheck passes
     command: >
-      sh -c "npm run migrate && npm run start"
+      sh -c "npm run migrate -- --env production && npm run start"
 
-  # ─── CLIENT ────────────────────────────────────────────────
+  # ─── PRODUCTION-LIKE CLIENT (nginx) ───────────────────────
   client:
+    profiles: ["prod"]
     build:
       context: ./client
       dockerfile: Dockerfile
@@ -43,6 +44,43 @@ services:
       - "80:80"                             # nginx serves on port 80
     depends_on:
       - server                              # just ordering — no healthcheck needed
+
+  # ─── DEVELOPMENT API ───────────────────────────────────────
+  server-dev:
+    profiles: ["dev"]
+    image: node:20-alpine
+    restart: unless-stopped
+    working_dir: /app
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+    volumes:
+      - ./server:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "npm ci && npm run migrate && npm run dev"
+
+  # ─── DEVELOPMENT CLIENT (Vite) ─────────────────────────────
+  client-dev:
+    profiles: ["dev"]
+    image: node:20-alpine
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./client:/app
+    environment:
+      VITE_API_URL: http://localhost:3000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - server-dev
+    command: >
+      sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5173"
 
   # ─── OPTIONAL: DB GUI ──────────────────────────────────────
   adminer:

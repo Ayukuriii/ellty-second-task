@@ -16,6 +16,7 @@ RUN npm run build          # runs tsc → outputs to /app/dist
 FROM node:20-alpine AS runner
 
 WORKDIR /app
+ENV NODE_ENV=production
 
 COPY package*.json ./
 RUN npm ci --omit=dev      # production deps only — no devDependencies

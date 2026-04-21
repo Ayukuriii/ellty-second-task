@@ -10,7 +10,7 @@ COPY . .
 RUN npm run build          # runs vite build → outputs to /app/dist
 
 # ─── STAGE 2: Run ─────────────────────────────────────────────
-FROM nginx:alpine AS runner
+FROM nginx:1.27-alpine AS runner
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
